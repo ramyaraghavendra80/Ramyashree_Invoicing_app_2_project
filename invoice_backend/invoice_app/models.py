@@ -8,9 +8,10 @@ class Invoices(models.Model):
     date = models.DateField()
     
 class Item(models.Model):
+    invoice=models.ForeignKey(Invoices, on_delete=models.CASCADE,blank=True,null=True,related_name='items')
     desc=models.CharField(max_length=250)
-    rate=models.DecimalField(max_digits=6,decimal_places=2)
-    quantity=models.DecimalField(max_digits=4,decimal_places=2)
+    rate=models.FloatField()
+    quantity=models.IntegerField()
 
 class UserManager(BaseUserManager):
     def create_user(self, username, password, **extra_fields):

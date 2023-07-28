@@ -4,58 +4,70 @@ from django.http import JsonResponse, Http404, HttpResponseBadRequest
 from .serializers import *
 from .data import *
 import json
-import uuid
-
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
 # Create your views here.
 
-class Invoices(View):
+class Invoice(APIView):
     def get(self,request):
-        return JsonResponse(invoicedata, safe=False)
+        invoicedata= Invoices.objects.all()
+        serializer = InvoicesSerializer(invoicedata,many=True)
+        return JsonResponse(serializer.data, safe=False)
 
-    def post(self,request):
+    def post(self, request):
+        data=json.loads(request.body)
+        serializer=InvoicesSerializer(data=data)
+        if serializer.is_valid():
+            Invoices.objects.create(**serializer.data)
+            return JsonResponse(data,status=200,safe=False)
+        return JsonResponse(serializer.errors,status=201,safe=False)
+
+class Invoice_detail(APIView):
+    def get(self, request, invoice_id):
+        invoice = Invoices.objects.filter(id=invoice_id).first()
+        print(invoice)
+        if invoice:
+            item = Item.objects.filter(invoice=invoice.id).values()
+            serializer = InvoicesSerializer(invoice).data
+            serializer["item"]=list(item)
+            return JsonResponse(serializer,status=200,safe=False)
+        return JsonResponse({"message":"Inovice Not Found"})
+
+class Add_Item(APIView):
+    def post(self, request, invoice_id):
         invoice_data=json.loads(request.body)
-        invoice_data["invoice_id"]=len(invoicedata)+1
-        invoice_serialized=InvoicesSerializer(data=invoice_data)
-        if(invoice_serialized.is_valid()):
-            invoicedata.append(invoice_serialized.data)
+        invoice_data["invoice"]=invoice_id
+        serializer=ItemSerializer(data=invoice_data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(invoice_data,status=200,safe=False)
+        return JsonResponse(serializer.errors,status=201,safe=False)
 
-            return JsonResponse(invoice_serialized.data, safe=False)
-        else:
-            return JsonResponse(invoice_serialized.errors, safe=False)
-
-class Invoice_detail(View):
-    def get(self,request,invoice_id):
-        invoice=next((invoice for invoice in invoicedata if invoice['invoice_id']== invoice_id), None)
-        return JsonResponse(invoice,safe=False)
-
-class Add_Item(View):
-    def post(self,request,invoice_id):
-        item_data=json.loads(request.body)
-        item_serialized=ItemSerializer(data=item_data)
-        if(item_serialized.is_valid()):
-            for item in invoicedata:
-                if item["invoice_id"]==invoice_id:
-                    item["items"].append(item_serialized.data)
-                return JsonResponse(item_serialized.data, safe=False)
-            return JsonResponse(item_serialized.errors, safe=False)
-
-class UserSignup(View):
-    def post(self, request):
-        user_data=json.loads(request.body)
-        user_data["user_id"]=len(userdata)+1
-        user_serialized=UserSerializer(data=user_data)
-        if(user_serialized.is_valid()):
-            userdata.append(user_serialized.data)
-            return JsonResponse({"message":"Registered successfully", "state":True})
-        return JsonResponse({"message":"Registration not successfull","state":False})
-
-class UserSignin(View):
-    def post(self, request):
-        user_data=json.loads(request.body)
-        print(user_data)
-        print(user_data["email_id"])
-        for info in userdata:
-                if(info["email_id"]==user_data["email_id"] and info["password"]==user_data["password"]):
-                    token=str(uuid.uuid4())
-                    return JsonResponse({"token":token,"message":"Login done","state":True})
-        return JsonResponse({"message":"login not successfull","state":False})
+class SignUp(APIView):
+    def post(self,request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            refresh = RefreshToken.for_user(user)
+            return JsonResponse(
+                {
+                    'refresh':str(refresh),
+                    'access':str(refresh.access_token),
+                }
+                )
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+      
+class SignIn(APIView):
+    def post(self,request):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data
+            refresh =RefreshToken.for_user(user)
+            return JsonResponse(
+                {
+                    'refresh':str(refresh),
+                    'access':str(refresh.access_token),
+                }
+            )
+        return JsonResponse(serializer.errors, safe=False)
