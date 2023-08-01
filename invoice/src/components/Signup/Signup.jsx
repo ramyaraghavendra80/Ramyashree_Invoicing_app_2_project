@@ -12,6 +12,7 @@ function Signup() {
     name: "",
     email_id: "",
     password: "",
+    username: "",
   };
   const submitForm = (values, props) => {
     console.log(values);
@@ -24,17 +25,18 @@ function Signup() {
         "Content-Type": "application/json",
       },
     })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.state) {
-          localStorage.setItem("email_id", data.email_id);
-          localStorage.setItem("password", data.password);
+      .then((res) => {
+        if (res.status === 201) {
           navigate("/login");
         } else {
-          alert(data.message);
+          alert("Signup unsuccesfull...!");
         }
+      })
+      .catch((error) => {
+        console.error("Signup unsuccesfull...!", error);
       });
   };
+
   const SignUpSchema = Yup.object().shape({
     name: Yup.string()
       .min(2, "Too Short!")
@@ -46,6 +48,7 @@ function Signup() {
     password: Yup.string()
       .required("Password is required")
       .min(6, "Password is too short - should be 6 chars minimum"),
+    username: Yup.string().required("username is required"),
   });
 
   return (
@@ -114,6 +117,24 @@ function Signup() {
                       component="div"
                       className="errormsg"
                       name="password"
+                    />
+                  </div>
+                  <div className="form-row">
+                    <Field
+                      type="username"
+                      name="username"
+                      id="username"
+                      placeholder="Enter username"
+                      className={`inputfield ${
+                        errors.username && touched.username
+                          ? "input-error"
+                          : null
+                      }`}
+                    />
+                    <ErrorMessage
+                      component="div"
+                      className="errormsg"
+                      name="username"
                     />
                   </div>
                   <div>

@@ -1,18 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
-
-class Invoices(models.Model):
-    invoice_id = models.IntegerField()
-    client_name = models.CharField(max_length=250)
-    date = models.DateField()
-    
-class Item(models.Model):
-    invoice=models.ForeignKey(Invoices, on_delete=models.CASCADE,blank=True,null=True,related_name='items')
-    desc=models.CharField(max_length=250)
-    rate=models.FloatField()
-    quantity=models.IntegerField()
-
 class UserManager(BaseUserManager):
     def create_user(self, username, password, **extra_fields):
         if not username:
@@ -37,3 +25,17 @@ class User(AbstractBaseUser):
     USERNAME_FIELD='username'
 
     objects=UserManager()
+
+class Invoices(models.Model):
+    invoice_id = models.AutoField(primary_key=True)
+    client_name = models.CharField(max_length=250)
+    date = models.DateField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='invoices',default=1)
+
+    
+class Item(models.Model):
+    invoice=models.ForeignKey(Invoices, on_delete=models.CASCADE,blank=True,null=True,related_name='items')
+    desc=models.CharField(max_length=250)
+    rate=models.FloatField()
+    quantity=models.IntegerField()
+

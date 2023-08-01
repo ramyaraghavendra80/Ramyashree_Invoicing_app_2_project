@@ -17,6 +17,10 @@ function App() {
 
       <BrowserRouter>
       <Routes>
+      <Route path='/login' element={<Login />}>
+        </Route>
+        <Route path='/Signup' element={<Signup />}>
+        </Route>
         <Route path='' element={<InvoiceList />}>
         </Route>
         <Route path='/newInvoice' element={<InvoiceForm />}>
@@ -26,10 +30,6 @@ function App() {
         <Route path='/:id/newItem' element={<ItemForm />}>
         </Route>
         <Route path='/' element={<ItemList />}>
-        </Route>
-        <Route path='/Login' element={<Login />}>
-        </Route>
-        <Route path='/Signup' element={<Signup />}>
         </Route>
       </Routes>
       </BrowserRouter>

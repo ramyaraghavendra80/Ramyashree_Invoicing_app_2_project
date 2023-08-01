@@ -4,35 +4,39 @@ import * as Yup from "yup";
 import Button from "react-bootstrap/esm/Button";
 import Navbar from "../NavBar/Navbar";
 import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 function Login() {
   const navigate = useNavigate();
   const initialValues = {
-    email_id: "",
+    username: "",
     password: "",
   };
-  const submitForm = (values) => {
-    console.log(values);
-    fetch("http://127.0.0.1:8000/project/user/signin/", {
-      method: "POST",
-      body: JSON.stringify(values),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then((res) => res.json()).then((data)=>{
-        if(data.state){
-            localStorage.setItem("token",data.token)
-            navigate("/")
-        }
-        else{
-            alert(data.message)
-        }
-    });
+
+const [username,setUsername]=useState('');
+const [password,setPassword]=useState('');
+
+  const submitForm = async () => {
+    try {
+      const res = await fetch("http://127.0.0.1:8000/project/user/login/", {
+        method: "POST",
+        body: JSON.stringify({username,password}),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.ok) {
+        throw new Error("Login failed");
+      }
+      const data = await res.json();
+      localStorage.setItem("access", data.access);
+      navigate("/");
+    } catch (error) {
+      console.error("Login unsuccesfull...!", error);
+    }
   };
   const LoginSchema = Yup.object().shape({
-    email_id: Yup.string()
-      .email("Email format is invalid")
-      .required("Email is required"),
+    username: Yup.string().required("username is required"),
     password: Yup.string().required("Password is required"),
     // .min(6, "Password is too short - should be 6 chars minimum"),
   });
@@ -55,16 +59,18 @@ function Login() {
                 <div className="loginbody">
                   <div className="form-row">
                     <Field
-                      type="email"
-                      name="email_id"
-                      id="email"
-                      placeholder="Enter email"
+                      type="username"
+                      name="username"
+                      id="username"
+                      placeholder="Enter username"
                       className={`inputfield ${
-                        errors.email && touched.email ? "input-error" : null
+                        errors.username && touched.username
+                          ? "input-error"
+                          : null
                       }`}
                     />
                     <ErrorMessage
-                      name="email_id"
+                      name="username"
                       className="errormsg"
                       component="div"
                     />

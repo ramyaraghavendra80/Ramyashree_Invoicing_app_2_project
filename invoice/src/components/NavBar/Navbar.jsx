@@ -32,7 +32,7 @@ export default function Navbar() {
               </a>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="/Login">
+              <a className="nav-link" href="/login">
                 Login
               </a>
             </li>

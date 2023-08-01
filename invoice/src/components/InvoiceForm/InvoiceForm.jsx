@@ -9,11 +9,13 @@ export default function InvoiceForm() {
 
   function handleSubmit() {
     newInvoice.items = []
+    const access = localStorage.getItem("access");
     fetch('http://127.0.0.1:8000/project/invoices/new_invoice/', {
       method: 'POST',
       body: JSON.stringify(newInvoice),
       headers: {
         'Content-Type': 'application/json',
+         Authorization:`Bearer ${access}`,
       },
     }).then((res) => navigate('/'))
   }
