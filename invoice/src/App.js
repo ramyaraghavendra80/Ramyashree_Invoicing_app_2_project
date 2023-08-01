@@ -19,9 +19,9 @@ function App() {
       <Routes>
       <Route path='/login' element={<Login />}>
         </Route>
-        <Route path='/Signup' element={<Signup />}>
+        <Route path='' element={<Signup />}>
         </Route>
-        <Route path='' element={<InvoiceList />}>
+        <Route path='/invoices' element={<InvoiceList />}>
         </Route>
         <Route path='/newInvoice' element={<InvoiceForm />}>
         </Route>

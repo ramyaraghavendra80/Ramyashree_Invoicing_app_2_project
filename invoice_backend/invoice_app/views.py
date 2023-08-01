@@ -11,7 +11,7 @@ from rest_framework import status
 # Create your views here.
 
 class Invoice(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self,request):
         invoicedata= Invoices.objects.filter(user=request.user.id)
@@ -29,7 +29,7 @@ class Invoice(APIView):
         return JsonResponse(serializer.errors,status=201,safe=False)
 
 class Invoice_detail(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, invoice_id):
         invoice = Invoices.objects.get(user=request.user.id,invoice_id=invoice_id)
@@ -39,7 +39,7 @@ class Invoice_detail(APIView):
         return JsonResponse({"message":"Inovice Not Found"})
 
 class Add_Item(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, invoice_id):
         invoice_data=json.loads(request.body)
@@ -60,7 +60,7 @@ class SignUp(APIView):
                 serializer.save()
                 return JsonResponse({"message": "Signup successful"},status=status.HTTP_201_CREATED)
             return JsonResponse(serializer.errors, safe=False)
-        return JsonResponse({"message": "uaer account exist"})
+        return JsonResponse({"message": "user account exist"})
 
 
 class SignIn(APIView):
