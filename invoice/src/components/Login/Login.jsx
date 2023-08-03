@@ -30,7 +30,7 @@ const [password,setPassword]=useState('');
       }
       const data = await res.json();
       localStorage.setItem("access", data.access);
-      navigate("/");
+      navigate("/invoices");
     } catch (error) {
       console.error("Login unsuccesfull...!", error);
     }
