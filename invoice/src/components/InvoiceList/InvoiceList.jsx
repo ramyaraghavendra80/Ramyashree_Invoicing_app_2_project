@@ -1,24 +1,29 @@
-import { useEffect, useState } from 'react'
-import { NavLink } from 'react-router-dom'
-import Navbar from '../NavBar/Navbar'
+import { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
+import Navbar from "../NavBar/Navbar";
 
 export default function InvoiceList() {
-  const [invoices, setInvoices] = useState([])
+  const [invoices, setInvoices] = useState([]);
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/project/invoices/')
+    const access = localStorage.getItem("access");
+    fetch("http://127.0.0.1:8000/project/invoices/", {
+      headers: {
+        Authorization: `Bearer ${access}`, // Replace 'YOUR_JWT_TOKEN' with your actual JWT token
+      },
+    })
       .then((res) => res.json())
       .then((results) => {
-        setInvoices(results)
+        setInvoices(results);
         results.forEach((element) => {
           element.totalAmount = element.items.reduce(
             (total, item) =>
               Number(total) + Number(item.rate) * Number(item.quantity),
-            0,
-          )
-        })
-        console.log(invoices)
-      })
-  }, [])
+            0
+          );
+        });
+        console.log(invoices);
+      });
+  }, []);
 
   return (
     <div className="container">
@@ -34,21 +39,22 @@ export default function InvoiceList() {
           </tr>
         </thead>
         <tbody>
-          {invoices.map((i) => (
-            <tr>
-              <th>{i.invoice_id}</th>
-              <td>{i.client_name}</td>
-              <td>{new Date(i.date).toDateString()}</td>
-              <td>{i.totalAmount}</td>
-              <td>
-                <a href={i.invoice_id} className="btn btn-warning">
-                  Items
-                </a>
-              </td>
-            </tr>
-          ))}
+          {invoices &&
+            invoices?.map((i) => (
+              <tr>
+                <th>{i.invoice_id}</th>
+                <td>{i.client_name}</td>
+                <td>{new Date(i.date).toDateString()}</td>
+                <td>{i.totalAmount}</td>
+                <td>
+                  <a href={i.invoice_id} className="btn btn-warning">
+                    Items
+                  </a>
+                </td>
+              </tr>
+            ))}
         </tbody>
       </table>
     </div>
-  )
+  );
 }

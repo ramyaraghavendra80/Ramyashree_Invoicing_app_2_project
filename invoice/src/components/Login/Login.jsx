@@ -13,24 +13,24 @@ function Login() {
     password: "",
   };
 
-const [username,setUsername]=useState('');
-const [password,setPassword]=useState('');
-
-  const submitForm = async () => {
+  const submitForm = async (values) => {
     try {
       const res = await fetch("http://127.0.0.1:8000/project/user/login/", {
         method: "POST",
-        body: JSON.stringify({username,password}),
+        body: JSON.stringify(values),
         headers: {
           "Content-Type": "application/json",
         },
       });
-      if (res.ok) {
-        throw new Error("Login failed");
-      }
+
       const data = await res.json();
-      localStorage.setItem("access", data.access);
-      navigate("/invoices");
+      console.log(data);
+      if (data?.access) {
+        localStorage.setItem("access", data.access);
+        navigate("/invoices");
+      } else {
+        alert("Login Credentials are not matching..!");
+      }
     } catch (error) {
       console.error("Login unsuccesfull...!", error);
     }

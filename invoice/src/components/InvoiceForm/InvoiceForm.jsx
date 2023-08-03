@@ -17,7 +17,7 @@ export default function InvoiceForm() {
         'Content-Type': 'application/json',
          Authorization:`Bearer ${access}`,
       },
-    }).then((res) => navigate('/'))
+    }).then((res) => navigate('/invoices'))
   }
 
   return (

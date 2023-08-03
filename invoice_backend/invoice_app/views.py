@@ -53,7 +53,7 @@ class Add_Item(APIView):
 class SignUp(APIView):
     def post(self,request):
         data=json.loads(request.body)
-        userExist = User.objects.filter(email_id=data["email_id"])
+        userExist = User.objects.filter(email=data["email"])
         if not userExist:
             serializer = UserSerializer(data=data)
             if serializer.is_valid():

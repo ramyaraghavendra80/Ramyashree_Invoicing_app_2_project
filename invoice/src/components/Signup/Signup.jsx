@@ -10,7 +10,7 @@ function Signup() {
   const navigate = useNavigate();
   const initialValues = {
     name: "",
-    email_id: "",
+    email: "",
     password: "",
     username: "",
   };
@@ -42,7 +42,7 @@ function Signup() {
       .min(2, "Too Short!")
       .max(50, "Too Long!")
       .required("Name is required"),
-    email_id: Yup.string()
+    email: Yup.string()
       .email("Email format is invalid")
       .required("Email is required"),
     password: Yup.string()
@@ -87,7 +87,7 @@ function Signup() {
                   <div className="form-row">
                     <Field
                       type="email"
-                      name="email_id"
+                      name="email"
                       id="email"
                       placeholder="Enter email"
                       className={`inputfield ${
@@ -95,7 +95,7 @@ function Signup() {
                       }`}
                     />
                     <ErrorMessage
-                      name="email_id"
+                      name="email"
                       className="errormsg"
                       component="div"
                     />

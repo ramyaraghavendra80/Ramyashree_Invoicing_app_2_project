@@ -18,7 +18,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser):
     id=models.AutoField(primary_key=True)
     name=models.CharField(max_length=100)
-    email_id= models.EmailField(max_length=200,unique=True)
+    email= models.EmailField(max_length=200,unique=True)
     password=models.CharField(max_length=16)
     username=models.CharField(max_length=100, unique=True)
 
@@ -30,7 +30,7 @@ class Invoices(models.Model):
     invoice_id = models.AutoField(primary_key=True)
     client_name = models.CharField(max_length=250)
     date = models.DateField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='invoices',default=1)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='invoices')
 
     
 class Item(models.Model):

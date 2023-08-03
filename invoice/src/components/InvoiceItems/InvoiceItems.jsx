@@ -1,34 +1,40 @@
-import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import Navbar from '../NavBar/Navbar'
-import './InvoiceItems.css'
-import ItemList from '../ItemList/ItemList'
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import Navbar from "../NavBar/Navbar";
+import "./InvoiceItems.css";
+import ItemList from "../ItemList/ItemList";
 
 export default function InvoiceForm() {
-  const [invoice, setInvoice] = useState({})
-  const [totalAmount, setTotalAmount] = useState(0)
-  const params = useParams()
+  const [invoice, setInvoice] = useState({});
+  const [totalAmount, setTotalAmount] = useState(0);
+  const params = useParams();
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/project/invoices/' + params.id)
+    const access = localStorage.getItem("access");
+
+    fetch("http://127.0.0.1:8000/project/invoices/" + params.id, {
+      headers: {
+        Authorization: `Bearer ${access}`, // Replace 'YOUR_JWT_TOKEN' with your actual JWT token
+      },
+    })
       .then((res) => res.json())
       .then((parsedRes) => {
-        setInvoice(parsedRes)
+        setInvoice(parsedRes);
         if (parsedRes && parsedRes.items) {
           const totalPrice = parsedRes.items.reduce(
             (accumulator, currentItem) => {
               return (
                 accumulator +
                 currentItem.quantity * parseFloat(currentItem.rate)
-              )
+              );
             },
-            0,
-          )
-          console.log(totalPrice)
-          setTotalAmount(totalPrice)
+            0
+          );
+          console.log(totalPrice);
+          setTotalAmount(totalPrice);
         }
-      })
-  }, [])
+      });
+  }, []);
 
   return (
     <div className="container">
@@ -63,12 +69,12 @@ export default function InvoiceForm() {
       <br />
       <br />
       <a
-        href={invoice.invoice_id + '/newItem'}
+        href={invoice.invoice_id + "/newItem"}
         className="float-start btn btn-warning"
       >
         New Item
       </a>
       <ItemList invoice={invoice} items={invoice.items} />
     </div>
-  )
+  );
 }

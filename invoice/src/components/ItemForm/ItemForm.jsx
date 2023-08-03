@@ -1,20 +1,27 @@
-import { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import Navbar from '../NavBar/Navbar'
-import './ItemForm.css'
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import Navbar from "../NavBar/Navbar";
+import "./ItemForm.css";
 
 export default function ItemForm() {
-  const [newItem, setNewItem] = useState({})
-  const navigate = useNavigate()
-  const { id } = useParams()
+  const [newItem, setNewItem] = useState({});
+  const navigate = useNavigate();
+  const { id } = useParams();
+
   function handleSubmit() {
-    fetch('http://127.0.0.1:8000/project/invoices/' + id.toString() + '/items/', {
-      method: 'POST',
-      body: JSON.stringify(newItem),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then((res) => navigate('/' + id))
+    const access = localStorage.getItem("access");
+
+    fetch(
+      "http://127.0.0.1:8000/project/invoices/" + id.toString() + "/items/",
+      {
+        method: "POST",
+        body: JSON.stringify(newItem),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${access}`, // Replace 'YOUR_JWT_TOKEN' with your actual JWT token
+        },
+      }
+    ).then((res) => navigate("/" + id));
   }
 
   return (
@@ -29,7 +36,7 @@ export default function ItemForm() {
           className="form-control"
           id="desc"
           onInput={(e) => {
-            setNewItem({ ...newItem, desc: e.target.value })
+            setNewItem({ ...newItem, desc: e.target.value });
           }}
         ></input>
       </div>
@@ -42,7 +49,7 @@ export default function ItemForm() {
           className="form-control"
           id="rate"
           onInput={(e) => {
-            setNewItem({ ...newItem, rate: e.target.value })
+            setNewItem({ ...newItem, rate: e.target.value });
           }}
         ></input>
       </div>
@@ -56,7 +63,7 @@ export default function ItemForm() {
           className="form-control"
           id="quantity"
           onInput={(e) => {
-            setNewItem({ ...newItem, quantity: e.target.value })
+            setNewItem({ ...newItem, quantity: e.target.value });
           }}
         ></input>
       </div>
@@ -65,5 +72,5 @@ export default function ItemForm() {
         Add Item
       </button>
     </div>
-  )
+  );
 }
